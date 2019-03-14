@@ -6,18 +6,18 @@ import os
 import argparse
 
 
-month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
-               'Sep','Oct','Nov','Dec']
-
-
 
 class Labor(object):
+    '''Class containing information needed to build a labor profile'''
 
     def __init__(self, name,
                  contract='contract_00',
-                 projects=['project_0', 'project_1', 'project_2', 'project_3'],
-                 hourly_rate=100,
+                 projects, hourly_rate=100,
                  labor_csv_path="~/generic_path/"):
+        # name (str): name of employee
+        # contract (str): contract name employee is working under
+        # projects (list): list of project names employee is working
+        # labor_csv_path (str): path of labor csv file
         self.name = name
         self.contract = contract
         self.projects = projects
@@ -47,19 +47,29 @@ class Labor(object):
 
         labor_dataframe = pd.DataFrame(0, index=rows, columns=columns)
 
-    def insert_project_hours(self, project, hours, date=datetime.datetime.now(),
-                                estimated=True):
+    def insert_project_hours(self, project, hours, 
+                    date=datetime.datetime.now(), estimated=True):
         year = date.year
         month = date.month
         day = date.day
         wk_number =  get_week_number_from_isodate(year, month, day)
         monday = get_start_data_from_calendar_week(year, wk_number)
         if estimated:
-            column = project + '_estimated'
+            row = project + '_estimated'
         else:
-            column = project + '_actuals'
-        df.iloc[monday, column] = hours
+            row = project + '_actuals'
+        labor_dataframe.iloc[row, monday] = hours
         return
+
+    def map_actual_to_estimated_hours(self, project):
+        estimated = labor_dataframe[project +'_estimated']
+        actuals = labor_dataframe[project + '_actuals']
+        dates = labor_dataframe.index.values.tolist()
+
+
+
+        
+
 
     def load_dataframe(self, load_path):
        return pd.read_csv(load_path)
