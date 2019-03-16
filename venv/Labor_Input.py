@@ -33,17 +33,17 @@ class Labor(object):
         project_hours = dict()
         wk_numbers = range(52)
         current_year = datetime.datetime.now().year
-        rows = []
+        columns = []
         for wk_number in wk_numbers:
             monday = get_start_data_from_calendar_week(current_year, wk_number)
-            rows.append(monday)
+            columns.append(monday)
 
-        columns = []
+        rows = []
         for project in projects:
             projected = project + '_estimated'
             actuals = project + '_actuals'
-            columns.append(projected)
-            columns.append(actuals)
+            rows.append(projected)
+            rows.append(actuals)
 
         labor_dataframe = pd.DataFrame(0, index=rows, columns=columns)
 

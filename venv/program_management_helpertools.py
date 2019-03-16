@@ -17,3 +17,7 @@ def get_week_number_from_isodate(year, month, day):
 
 def get_num_of_wks_btwn_dates(start_date, end_date):
     datetime.date(
+
+
+def convert_date_str_into_datetime_obj(date, format='%Y-%m-%d'):
+    return datetime.datetime.strptime(date, format)
