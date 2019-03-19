@@ -16,8 +16,11 @@ def get_week_number_from_isodate(year, month, day):
     return wk_number
 
 def get_num_of_wks_btwn_dates(start_date, end_date):
-    datetime.date(
-
+    num_weeks = (end_date - start_date).weeks
+    return num_wks
 
 def convert_date_str_into_datetime_obj(date, format='%Y-%m-%d'):
     return datetime.datetime.strptime(date, format)
+
+def get_current_date():
+    return datetime.datetime.now()

@@ -5,6 +5,7 @@ import numpy as np
 import program_management_helpertools as pmh
 
 import datetime
+import os
 
 try:
     import cpickle as pickle
@@ -46,6 +47,26 @@ class Project(object):
         self.end_date = end_date
         self.args = args
         self.kwargs = kwargs
+
+        # Variables to store the projected burn rates for each project
+
+        # Calculated burn rate based on dates provided and amount we want
+        # to burn:
+        self.calc_burn = None
+
+        # Estimated burn based on hours for employees associated with project
+        self.est_hrly_burn = None
+
+        # Actual burn based on hours reported
+        self.hrly_burn = None
+
+        # Actual burn based on finance invoices
+        self.actual_burn = None
+
+        # dictionary to contain money spent recorded at different dates
+        #      -- keys: date 'yyyy-mm-dd'
+        #      -- values: $ spent at that date
+        self.spend_dict = dict()
 
     def map_burn(self, date):
         pass
@@ -92,6 +113,8 @@ class Project(object):
 
         target_burn_array = np.ones(num_wks) * target_burn_rate
 
+    def plot_burn(self, burn_array, start_date=self.start_date,
+                  end_date=self.end_date, curr_date=self.curr_date):
         # Plotting cost over dates
         dates = employees[0].labor_df.columns[prev_start_monday:prev_end_monday].values
         fig = plt.figure()
@@ -106,14 +129,37 @@ class Project(object):
             plot_name = 'burnplot_' + end_date
             save_path = project_dir + self.__name__ + '\saved_lots' + plot_name
             plt.savefig(save_path)
-        plt.show()
         return
 
-    def save_project_object(self):
-        return
+def save_project_object(proj_obj, date=pmh.get_current_date):
+    '''Saves project object into python pickle format'''
+    # Params:
+    #       proj_obj (object): class initialized for project
+    #       date (datetime obj): python datetime object specifying date
+    #                            to include in the save file name
+    date_str = date.strftime('_%Y%m%d_%H:%M')
+    pkl_file_name = proj_obj.__name__ + date_str + '.pkl'
+    with open(pkl_file_name, 'wb') as pf:
+        pickle.dump(proj_obj, pf)
+    return
 
 
-        
+if __name__ == '__main__':
+    rootdir = 'C:/Documents/MISS Documents/projects_dir'
+    projects_dict = dict()
+    for dir_name, _, _ in os.walk(rootdir):
+       for _, _, file in os.walk(rootdir + dir_name):
+           if file.endswith(''.pkl''):
+               # Get latest date pickle file to open
+                with open(file) as pkl_file:
+                    proj_obj = pickle.load(pkl_file)
+                projects_dict[dir_name] = proj_obj
+                break
+    # Calculate average burn rates for all projects
+    for _, proj_obj in projects_dict.items()
+        # Calculate flat burn rate
+        proj_obj.calc_burn = proj_obj.flat_burn()
+
 
 
 
