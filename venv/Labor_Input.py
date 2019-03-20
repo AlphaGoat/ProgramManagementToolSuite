@@ -10,7 +10,8 @@ import argparse
 class Labor(object):
     '''Class containing information needed to build a labor profile'''
 
-    def __init__(self, name,
+    def __init__(self, name, 
+                 labor_df=None,
                  contract='contract_00',
                  projects, hourly_rate=100,
                  labor_csv_path="~/generic_path/"):
@@ -23,13 +24,16 @@ class Labor(object):
         self.projects = projects
         self.hourly_rate = hourly_rate
         self.labor_csv_path = labor_csv_path
-        for _,_,files in os.walk(self.labor_csv_path):
-            if name + '.csv' in files:
-                labor_dataframe = self.load_dataframe(labor_csv_path + name + '.csv')
-            else:
-                labor_dataframe = generate_labor_dataframe()
+        if labor_df:
+            self.labor_df = labor_df
+        else:
+            for _,_,files in os.walk(self.labor_csv_path):
+                if name + '.csv' in files:
+                    labor_df = self.load_dataframe(labor_csv_path + name + '.csv')
+                else:
+                    labor_df = generate_labor_df()
 
-    def generate_empty_labor_dataframe(self):
+    def generate_empty_labor_df(self):
         project_hours = dict()
         wk_numbers = range(52)
         current_year = datetime.datetime.now().year
@@ -45,10 +49,10 @@ class Labor(object):
             columns.append(projected)
             columns.append(actuals)
 
-        labor_dataframe = pd.DataFrame(0, index=rows, columns=columns)
+        labor_df = pd.DataFrame(0, index=rows, columns=columns)
 
     def insert_project_hours(self, project, hours, 
-                    date=datetime.datetime.now(), estimated=True):
+                   date=datetime.datetime.now(), estimated=True):
         year = date.year
         month = date.month
         day = date.day
@@ -58,18 +62,13 @@ class Labor(object):
             row = project + '_estimated'
         else:
             row = project + '_actuals'
-        labor_dataframe.iloc[row, monday] = hours
+        labor_df.iloc[row, monday] = hours
         return
 
     def map_actual_to_estimated_hours(self, project):
-        estimated = labor_dataframe[project +'_estimated']
-        actuals = labor_dataframe[project + '_actuals']
-        dates = labor_dataframe.index.values.tolist()
-
-
-
-        
-
+        estimated = labor_df[project +'_estimated']
+        actuals = labor_df[project + '_actuals']
+        dates = labor_df.index.values.tolist()
 
     def load_dataframe(self, load_path):
        return pd.read_csv(load_path)
@@ -99,6 +98,18 @@ def get_start_data_from_calendar_week(year, calendar_week):
 def get_week_number_from_isodate(year, month, day):
     wk_number = datetime.date(year, month, day).isocalendar()[1]
     return wk_number
+
+def load_dataframes_from_xlsx(xlsx, name=None, create_labor=False):
+    '''loads labor dataframes from central excel file'''
+    xlsx_file = pd.ExcelFile(xlsx)
+    labor_dfs = {name: xlsx.parse(name) for name in xlsx.sheet_names}
+    if name and create_labor:
+        labor = Labor(name, labor_df=labor_dfs[name]) 
+        return labor
+
+        
+    for name, df in labor_dfs.items()
+        
 
 if __name__ == '__main__':
    #parser = argparse.
