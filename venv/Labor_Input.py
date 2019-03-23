@@ -80,6 +80,24 @@ class Labor(object):
 
 
 
+# Create labor objects and dataframes from larger excel sheet
+def load_labor_from_excel(excel_path, *args, **kwargs):
+    opt_path = os.path.normpath(excel_path)
+    df = pd.read_excel(os_path)
+    # Fill NaNs in column names with name of corresponding employee
+    df.column = pd.Series(df.column).fillna(method='ffill')
+    # do the same with months in indices
+    df.index = pd.Series(df.index).fillna(method='ffill')
+    # convert week numbers in first column to date of first monday
+    # in corresponding week
+
+
+
+def create_labor_excelsheet(list_of_labor, excel_path, *args, **kwargs):
+    '''Creates an excel spreadsheet from labor objects initialized
+       through this script
+    '''
+    for labor in list_of_labor:
 
 
 

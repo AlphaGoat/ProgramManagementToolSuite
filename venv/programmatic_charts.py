@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.collections import PatchCollection
 
 expend_dict = {
                'project_0': 1e3,
@@ -50,21 +51,26 @@ def  expenditure_chart(expenditures_dict, nested_pie=True, *args, **kwargs):
 
     return
 
-    def timeline_chart(prgm_events, start_date, end_date, *args, **kwargs):
+def timeline_chart(prgm_events, start_date, end_date, *args, **kwargs):
     '''Creates a timeline for programmatic events
        Params:
             prgm_events (dict): a dictionary whose keys are projects
-                                    and whose values are a list of 
+                                    and whose values are a list of
                                     events dicts. These events
-                                    dicts in turn have keys that are 
+                                    dicts in turn have keys that are
                                     the name of the event and values
-                                    that are tuples with the type of 
+                                    that are tuples with the type of
                                     the event as a string and the date
-                                    of completion of the event as a 
+                                    of completion of the event as a
                                     datetime object
-                                    
+
             {project: (proj_init, proj_end,
-                    {event: (event_init, event_end, event_type)}
+                {event: (event_init, event_end, event_type,
+                         event_label, {event_criteria:
+                                     (criteria_start_date, criteria_end_date)
+                                      }
+                          )
+                 }
                        )
             }
     '''
@@ -82,8 +88,59 @@ def  expenditure_chart(expenditures_dict, nested_pie=True, *args, **kwargs):
             event_end = event_info[1]
             event_type = event_info[2]
             if event_type == 'milestone':
-                ax.add_patch(
+                vertices = np.array([[1,1][2,2],[3,1]])
+                ml_p = plt.Polygon(vertices,
+                                   color='white',
+                                   edgecolor='black',
+                                   linestyle='-'
+                                   )
+                ax.add_patch(ml_p)
 
+            elif event_type == 'failed_milestone':
+                vertices = np.array([[1,1][2,2],[3,1]])
+                ml_p = plt.Polygon(vertices,
+                                   color='white',
+                                   edgecolor='black',
+                                   linestyle='--'
+                                   )
+                ax.add_patch(ml_p)
+
+            elif event_type == 'passed_milestone':
+                vertices = np.array([[1,1][2,2],[3,1]])
+                ml_p = plt.Polygon(vertices,
+                                   color='lightblue',
+                                   edgecolor='black',
+                                   linestyle='-'
+                                   )
+                ax.add_patch(ml_p)
+
+
+            elif event_type == 'deliverable':
+                vertices = np.array([[1,1],[2,2],[2.0],[3,1]])
+                dl_p = plt.Polygon(vertices,
+                                   color='white',
+                                   edgecolor='black',
+                                   linestyle='-'
+                                   )
+                ax.add_patch(ml_p)
+
+            elif event_type == 'failed_deliverable':
+                vertices = np.array([[1,1],[2,2],[2.0],[3,1]])
+                dl_p = plt.Polygon(vertices,
+                                   color='white',
+                                   edgecolor='black',
+                                   linestyle='--'
+                                   )
+                ax.add_patch(ml_p)
+
+            elif event_type == 'passed_deliverable':
+                vertices = np.array([[1,1],[2,2],[2.0],[3,1]])
+                dl_p = plt.Polygon(vertices,
+                                   color='lightblue',
+                                   edgecolor='black',
+                                   linestyle='-'
+                                   )
+                ax.add_patch(ml_p)
         fig.
            
 
