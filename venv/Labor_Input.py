@@ -6,7 +6,6 @@ import os
 import argparse
 
 
-
 class Labor(object):
     '''Class containing information needed to build a labor profile'''
 
@@ -81,15 +80,50 @@ class Labor(object):
 
 
 # Create labor objects and dataframes from larger excel sheet
-def load_labor_from_excel(excel_path, *args, **kwargs):
+def load_labor_from_excel(excel_path, personnel=True, *args, **kwargs):
     opt_path = os.path.normpath(excel_path)
-    df = pd.read_excel(os_path)
+    xls = pd.ExcelFile(opt_path)
+
+    df = pd.read_excel(xls, 'personnel_execution')
+    # Prune resultant dataframe
+    df.drop(df.columns[[0]], axis=1, inplace=True)
+    df.drop(df.index[0], axis=0, inplace=True)
+    df.dropna(how='all', inplace=True)
+    df.dropna(axis=1, how='all', inplace=True)
+
+
+    # Specify column names
+    df.rename(columns={'Unnamed: 1': 'Year', 'Unnamed: 2': 'Months', 'Unnamed: 3': 'Weeks'},
+              inplace=True)
+
+    # Fill in values where necessary
+    df['Year'].fillna(method='ffill',inplace=True)
+    df['Months'].fillna(method='ffill',inplace=True)
+    df.iloc[[1],3:].fillna(method='ffill',inplace=True) # NOTE: needs to be edited. Possibly with
+                                                        # lambda function
+
+    # Fill in rest of column names based on person and attribtute being referenced
+    for column in df.columns:
+        if column.startswith('Unnamed'):
+            df.rename(columns={column: df.get_value(1, column) + '_' + df.get_value(2, column)},
+                      inplace=True)
+
+
+
+
+
+
+    # Fill in values where necessary
+
+    # Reading out personnel labor sheet
     # Fill NaNs in column names with name of corresponding employee
     df.column = pd.Series(df.column).fillna(method='ffill')
     # do the same with months in indices
     df.index = pd.Series(df.index).fillna(method='ffill')
     # convert week numbers in first column to date of first monday
     # in corresponding week
+
+
 
 
 
